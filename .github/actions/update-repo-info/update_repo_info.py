@@ -127,6 +127,9 @@ def update_readme():
         logging.info('No changes made to README.')
 
 def git_commit_and_push(branch_name, commit_message):
+    # Set git user info for CI
+    subprocess.run(['git', 'config', 'user.name', 'github-actions[bot]'], check=True)
+    subprocess.run(['git', 'config', 'user.email', '41898282+github-actions[bot]@users.noreply.github.com'], check=True)
     try:
         subprocess.run(['git', 'add', README_PATH], check=True)
         subprocess.run(['git', 'commit', '-m', commit_message], check=True)
@@ -138,6 +141,9 @@ def git_commit_and_push(branch_name, commit_message):
         return False
 
 def create_branch_and_pr(base_branch, pr_branch, commit_message, pr_title, pr_body, github_token, repo_full_name):
+    # Set git user info for CI
+    subprocess.run(['git', 'config', 'user.name', 'github-actions[bot]'], check=True)
+    subprocess.run(['git', 'config', 'user.email', '41898282+github-actions[bot]@users.noreply.github.com'], check=True)
     try:
         subprocess.run(['git', 'checkout', '-b', pr_branch], check=True)
         subprocess.run(['git', 'add', README_PATH], check=True)
