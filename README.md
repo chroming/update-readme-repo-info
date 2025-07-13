@@ -54,13 +54,10 @@ jobs:
 
 ## Example
 
-Before:
 ```
-- https://github.com/octocat/Hello-World (⭐ 3014, ⏰ 2025-07-12)​‌‍
-```
-After:
-```
-- https://github.com/octocat/Hello-World (⭐ 3014, ⏰ 2025-07-12)​‌‍
+- https://github.com/octocat/Hello-World
+- https://github.com/chroming/pdfdir
+- https://github.com/microsoft/vscode
 ```
 
 ## License
