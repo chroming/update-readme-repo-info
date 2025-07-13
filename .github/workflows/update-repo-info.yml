@@ -15,10 +15,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Update repo info in README
-        uses: ./.github/actions/update-repo-info
+      - name: Update Repo Info in README
+        uses: chroming/update-readme-repo-info@v1.6
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          mode: pr  # or 'direct' for direct commit & push
-        env:
-          BASE_BRANCH: master  # or 'main' or your custom branch name
+          mode: pr  # 'pr' or 'direct'
+          base_branch: master  # or 'main' or your custom branch name
