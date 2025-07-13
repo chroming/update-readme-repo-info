@@ -18,9 +18,12 @@ on:
   push:
     tags:
       - '*'  # Trigger on any new tag push
+  workflow_dispatch:
 jobs:
   update-readme:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -28,15 +31,7 @@ jobs:
         uses: ./.github/actions/update-repo-info
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Set up Git user
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-      - name: Commit and push changes
-        run: |
-          git add README.md
-          git commit -m "chore: update repo info in README" || echo "No changes to commit"
-          git push
+          mode: pr  # or 'direct' for direct commit & push
 ```
 
 ### 2. Inputs
@@ -44,6 +39,7 @@ jobs:
 | Name          | Description                  | Required | Default                |
 |---------------|-----------------------------|----------|------------------------|
 | github_token  | GitHub Token for API access | true     | ${{ github.token }}    |
+| mode          | Update mode: pr (pull request) or direct (commit & push) | false | pr |
 
 ### 3. Output
 
@@ -53,11 +49,11 @@ jobs:
 
 Before:
 ```
-- https://github.com/octocat/Hello-World (⭐ 3014, ⏰ 2025-07-12) <!--repo-info-->
+- https://github.com/octocat/Hello-World
 ```
 After:
 ```
-- https://github.com/octocat/Hello-World (⭐ 3014, ⏰ 2025-07-12) <!--repo-info-->
+- https://github.com/octocat/Hello-World (⭐ 3014, ⏰ 2025-07-12)
 ```
 
 ## License

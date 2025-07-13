@@ -6,6 +6,10 @@ inputs:
     description: 'GitHub Token for API access.'
     required: true
     default: ${{ github.token }}
+  mode:
+    description: 'Update mode: direct (commit & push) or pr (create pull request)'
+    required: false
+    default: pr
 runs:
   using: 'composite'
   steps:
@@ -20,4 +24,5 @@ runs:
       run: python ${{ github.action_path }}/update_repo_info.py
       env:
         GITHUB_TOKEN: ${{ inputs.github_token }}
+        UPDATE_MODE: ${{ inputs.mode }}
       shell: bash

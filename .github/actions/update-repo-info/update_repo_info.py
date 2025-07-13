@@ -2,6 +2,7 @@ import os
 import re
 import requests
 import logging
+import subprocess
 from datetime import datetime
 
 logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s')
@@ -125,5 +126,54 @@ def update_readme():
     else:
         logging.info('No changes made to README.')
 
+def git_commit_and_push(branch_name, commit_message):
+    try:
+        subprocess.run(['git', 'add', README_PATH], check=True)
+        subprocess.run(['git', 'commit', '-m', commit_message], check=True)
+        subprocess.run(['git', 'push', 'origin', branch_name], check=True)
+        logging.info(f'Pushed changes to {branch_name}')
+        return True
+    except subprocess.CalledProcessError as e:
+        logging.error(f'Git push failed: {e}')
+        return False
+
+def create_branch_and_pr(base_branch, pr_branch, commit_message, pr_title, pr_body, github_token, repo_full_name):
+    try:
+        subprocess.run(['git', 'checkout', '-b', pr_branch], check=True)
+        subprocess.run(['git', 'add', README_PATH], check=True)
+        subprocess.run(['git', 'commit', '-m', commit_message], check=True)
+        subprocess.run(['git', 'push', 'origin', pr_branch], check=True)
+        logging.info(f'Pushed changes to {pr_branch}')
+    except subprocess.CalledProcessError as e:
+        logging.error(f'Git branch/push failed: {e}')
+        return False
+    # Create PR via GitHub API
+    api_url = f'https://api.github.com/repos/{repo_full_name}/pulls'
+    headers = {'Authorization': f'Bearer {github_token}', 'Accept': 'application/vnd.github+json'}
+    data = {
+        'title': pr_title,
+        'head': pr_branch,
+        'base': base_branch,
+        'body': pr_body
+    }
+    resp = requests.post(api_url, headers=headers, json=data)
+    if resp.status_code == 201:
+        logging.info(f'Pull request created: {resp.json().get("html_url")}')
+        return True
+    else:
+        logging.error(f'Failed to create PR: {resp.text}')
+        return False
+
 if __name__ == '__main__':
     update_readme()
+    mode = os.getenv('UPDATE_MODE', 'direct')
+    repo_full_name = os.getenv('GITHUB_REPOSITORY')
+    base_branch = os.getenv('GITHUB_REF_NAME', 'master')
+    commit_message = 'chore: update repo info in README'
+    pr_branch = f'update-repo-info-{datetime.now().strftime("%Y%m%d%H%M%S")}'
+    pr_title = 'chore: update repo info in README'
+    pr_body = 'Automated update of repo info in README.'
+    if mode == 'direct':
+        git_commit_and_push(base_branch, commit_message)
+    elif mode == 'pr' and repo_full_name:
+        create_branch_and_pr(base_branch, pr_branch, commit_message, pr_title, pr_body, GITHUB_TOKEN, repo_full_name)
