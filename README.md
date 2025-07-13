@@ -24,6 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      pull-requests: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -33,6 +34,10 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           mode: pr  # or 'direct' for direct commit & push
 ```
+
+> **Note:**
+> - If you use `mode: pr`, your workflow must have `pull-requests: write` permission (see above).
+> - In forked repositories or PR workflows, GitHub's default GITHUB_TOKEN may not have permission to create PRs. Use in the main repository for full functionality.
 
 ### 2. Inputs
 
