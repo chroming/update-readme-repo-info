@@ -3,7 +3,7 @@
 This GitHub Action parses all GitHub repository links in your README.md, fetches their star count and last update time, and updates the README accordingly. It is designed for easy reuse and extension.
 
 ## Features
-- Automatically finds all `https://github.com/owner/repo` links in your README.md
+- Automatically finds all `https://github.com/owner/repo (fetch failed) <!--repo-info-->` links in your README.md
 - Fetches star count and last update time for each repository
 - Updates the README in-place, appending info after each link
 - Easily extensible for more repository info fields
@@ -53,11 +53,11 @@ jobs:
 
 Before:
 ```
-- https://github.com/octocat/Hello-World
+- https://github.com/octocat/Hello-World (⭐ 3014, ⏰ 2025-07-12) <!--repo-info-->
 ```
 After:
 ```
-- https://github.com/octocat/Hello-World (⭐ 1234, ⏰ 2025-07-13)
+- https://github.com/octocat/Hello-World (⭐ 3014, ⏰ 2025-07-12) <!--repo-info-->
 ```
 
 ## License
