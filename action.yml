@@ -1,6 +1,9 @@
 name: 'Update Repo Info in README'
 description: 'Parse GitHub repo links in README, fetch stars and last update, and update README.'
-author: 'Your Name'
+author: 'chroming'
+branding:
+  icon: 'book-open'
+  color: 'gray-dark'
 inputs:
   github_token:
     description: 'GitHub Token for API access.'
