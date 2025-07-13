@@ -33,6 +33,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           mode: pr  # or 'direct' for direct commit & push
+          base_branch: master  # or 'main' or your custom branch name
 ```
 
 > **Note:**
@@ -48,7 +49,7 @@ jobs:
 |---------------|-----------------------------|----------|------------------------|
 | github_token  | GitHub Token for API access | false     | ${{ github.token }}    |
 | mode          | Update mode: pr (pull request) or direct (commit & push) | false | pr |
-| BASE_BRANCH   | PR/commit base branch name (e.g. main/master/other)      | false | master |
+| base_branch   | PR/commit base branch name (e.g. main/master/other)      | false | master |
 
 
 ### 3. Output

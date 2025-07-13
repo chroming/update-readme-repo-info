@@ -13,6 +13,10 @@ inputs:
     description: 'Update mode: direct (commit & push) or pr (create pull request)'
     required: false
     default: pr
+  base_branch:
+    description: 'PR/commit base branch name (e.g. main/master/other)'
+    required: false
+    default: master
 runs:
   using: 'composite'
   steps:
@@ -28,4 +32,5 @@ runs:
       env:
         GITHUB_TOKEN: ${{ inputs.github_token }}
         UPDATE_MODE: ${{ inputs.mode }}
+        BASE_BRANCH: ${{ inputs.base_branch }}
       shell: bash
