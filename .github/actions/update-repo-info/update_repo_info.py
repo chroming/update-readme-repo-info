@@ -76,6 +76,7 @@ def update_readme():
     links = parse_repo_links(content)
     updated_content = content
     seen = set()
+    updated_links = []  # Track which links are updated
     for full_url, owner, repo in links:
         if full_url in seen:
             continue
@@ -88,12 +89,15 @@ def update_readme():
             info_part = match.group(2)
             if info_part and REPO_INFO_MARK in info_part:
                 # Marker exists, update the content
+                updated_links.append(url)
                 return f'{url} {info_str}'
             elif info_part:
                 # Old format without marker, replace with new format
+                updated_links.append(url)
                 return f'{url} {info_str}'
             else:
                 # No info, add new
+                updated_links.append(url)
                 return f'{url} {info_str}'
         updated_content = re.sub(
             rf'({re.escape(full_url)})(\s*\(⭐.*?\) {REPO_INFO_MARK}|\s*\(⭐.*?\)|)',
@@ -105,6 +109,10 @@ def update_readme():
         with open(README_PATH, 'w', encoding='utf-8') as f:
             f.write(updated_content)
         logging.info('README updated successfully.')
+        if updated_links:
+            logging.info('Updated repo links:')
+            for link in updated_links:
+                logging.info(f'  {link}')
     else:
         logging.info('No changes made to README.')
 
