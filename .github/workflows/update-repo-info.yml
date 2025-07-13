@@ -19,4 +19,6 @@ jobs:
         uses: ./.github/actions/update-repo-info
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          mode: pr  # 'pr 'or 'direct'
+          mode: pr  # or 'direct' for direct commit & push
+        env:
+          BASE_BRANCH: master  # or 'main' or your custom branch name

@@ -40,6 +40,7 @@ jobs:
 > - If you use `mode: direct`, your workflow must have `contents: write` permission (see above).
 > - In forked repositories or PR workflows, GitHub's default GITHUB_TOKEN may not have permission to create PRs. Use in the main repository for full functionality.
 > - You must enable **Settings → Actions → General → Allow GitHub Actions to create and approve pull requests** in your repository settings, otherwise PR creation will fail with a 403 error.
+> - You can set the PR/commit base branch by adding `BASE_BRANCH` to the workflow env (default is `master`).
 
 ### 2. Inputs
 
@@ -47,6 +48,8 @@ jobs:
 |---------------|-----------------------------|----------|------------------------|
 | github_token  | GitHub Token for API access | false     | ${{ github.token }}    |
 | mode          | Update mode: pr (pull request) or direct (commit & push) | false | pr |
+| BASE_BRANCH   | PR/commit base branch name (e.g. main/master/other)      | false | master |
+
 
 ### 3. Output
 

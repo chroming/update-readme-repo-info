@@ -174,8 +174,8 @@ if __name__ == '__main__':
     update_readme()
     mode = os.getenv('UPDATE_MODE', 'direct')
     repo_full_name = os.getenv('GITHUB_REPOSITORY')
-    # Always use the actual default branch as PR base
-    base_branch = 'master'
+    # Support workflow input for base branch, fallback to master
+    base_branch = os.getenv('BASE_BRANCH', 'master')
     commit_message = 'chore: update repo info in README'
     pr_branch = f'update-repo-info-{datetime.now().strftime("%Y%m%d%H%M%S")}'
     pr_title = 'chore: update repo info in README'
