@@ -34,9 +34,11 @@ class RepoInfoFetcher:
             'updated': data.get('updated_at', '')
         }
 
-REPO_LINK_RE = re.compile(r'(https://github.com/[\w.-]+/[\w.-]+)')
-REPO_INFO_MARK = '<!--repo-info-->'  # Marker for detection and update
+# Use three invisible Unicode characters as a marker (e.g., ZERO WIDTH SPACE, ZERO WIDTH NON-JOINER, ZERO WIDTH JOINER)
+REPO_INFO_MARK = '\u200B\u200C\u200D'  # Invisible marker for processed links
 
+# Improved GitHub repo link regex: only match valid owner/repo, not subpaths or issues
+REPO_LINK_RE = re.compile(r'(https://github.com/([\w.-]+)/([\w.-]+))(?![\w./-])')
 
 def parse_repo_links(text):
     """
@@ -53,17 +55,17 @@ def parse_repo_links(text):
 
 def format_info(info):
     """
-    Formats the repository info for display after the link, with a marker for update detection.
+    Formats the repository info for display after the link, with an invisible marker for update detection.
     """
     if not info:
-        return f'(fetch failed) {REPO_INFO_MARK}'
+        return ''  # If fetch failed, do not add anything
     updated = info['updated']
     if updated:
         try:
             updated = datetime.strptime(updated, '%Y-%m-%dT%H:%M:%SZ').strftime('%Y-%m-%d')
         except Exception:
             pass
-    return f'(⭐ {info["stars"]}, ⏰ {updated}) {REPO_INFO_MARK}'
+    return f'(⭐ {info["stars"]}, ⏰ {updated}){REPO_INFO_MARK}'
 
 def update_readme():
     if not os.path.exists(README_PATH):
@@ -83,24 +85,31 @@ def update_readme():
         seen.add(full_url)
         info = fetcher.fetch(owner, repo)
         info_str = format_info(info)
-        # Only add the marker once; if it already exists, update the content, otherwise add it
         def replace_info(match):
             url = match.group(1)
             info_part = match.group(2)
+            # Only update if marker exists, else add if info_str is not empty
             if info_part and REPO_INFO_MARK in info_part:
-                # Marker exists, update the content
-                updated_links.append(url)
-                return f'{url} {info_str}'
+                if info_str:
+                    updated_links.append(url)
+                    return f'{url} {info_str}'
+                else:
+                    # If fetch failed, remove the old info
+                    return url
             elif info_part:
-                # Old format without marker, replace with new format
-                updated_links.append(url)
-                return f'{url} {info_str}'
+                if info_str:
+                    updated_links.append(url)
+                    return f'{url} {info_str}'
+                else:
+                    return url
             else:
-                # No info, add new
-                updated_links.append(url)
-                return f'{url} {info_str}'
+                if info_str:
+                    updated_links.append(url)
+                    return f'{url} {info_str}'
+                else:
+                    return url
         updated_content = re.sub(
-            rf'({re.escape(full_url)})(\s*\(⭐.*?\) {REPO_INFO_MARK}|\s*\(⭐.*?\)|)',
+            rf'({re.escape(full_url)})(\s*\(⭐.*?\){REPO_INFO_MARK}|\s*\(⭐.*?\)|)',
             replace_info,
             updated_content
         )
