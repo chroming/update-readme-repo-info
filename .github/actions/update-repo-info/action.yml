@@ -1,0 +1,23 @@
+name: 'Update Repo Info in README'
+description: 'Parse GitHub repo links in README, fetch stars and last update, and update README.'
+author: 'Your Name'
+inputs:
+  github_token:
+    description: 'GitHub Token for API access.'
+    required: true
+    default: ${{ github.token }}
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    - name: Install dependencies
+      run: pip install requests
+      shell: bash
+    - name: Run update script
+      run: python ${{ github.action_path }}/update_repo_info.py
+      env:
+        GITHUB_TOKEN: ${{ inputs.github_token }}
+      shell: bash
