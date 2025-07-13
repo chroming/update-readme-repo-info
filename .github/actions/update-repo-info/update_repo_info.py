@@ -35,6 +35,7 @@ class RepoInfoFetcher:
         }
 
 REPO_LINK_RE = re.compile(r'(https://github.com/[\w.-]+/[\w.-]+)')
+REPO_INFO_MARK = '<!--repo-info-->'  # Marker for detection and update
 
 
 def parse_repo_links(text):
@@ -52,17 +53,17 @@ def parse_repo_links(text):
 
 def format_info(info):
     """
-    Formats the repository info for display after the link.
+    Formats the repository info for display after the link, with a marker for update detection.
     """
     if not info:
-        return '(fetch failed)'
+        return f'(fetch failed) {REPO_INFO_MARK}'
     updated = info['updated']
     if updated:
         try:
             updated = datetime.strptime(updated, '%Y-%m-%dT%H:%M:%SZ').strftime('%Y-%m-%d')
         except Exception:
             pass
-    return f'(⭐ {info["stars"]}, ⏰ {updated})'
+    return f'(⭐ {info["stars"]}, ⏰ {updated}) {REPO_INFO_MARK}'
 
 def update_readme():
     if not os.path.exists(README_PATH):
@@ -81,9 +82,22 @@ def update_readme():
         seen.add(full_url)
         info = fetcher.fetch(owner, repo)
         info_str = format_info(info)
+        # Only add the marker once; if it already exists, update the content, otherwise add it
+        def replace_info(match):
+            url = match.group(1)
+            info_part = match.group(2)
+            if info_part and REPO_INFO_MARK in info_part:
+                # Marker exists, update the content
+                return f'{url} {info_str}'
+            elif info_part:
+                # Old format without marker, replace with new format
+                return f'{url} {info_str}'
+            else:
+                # No info, add new
+                return f'{url} {info_str}'
         updated_content = re.sub(
-            rf'({re.escape(full_url)})(\s*\(⭐.*?\))?',
-            rf'\1 {info_str}',
+            rf'({re.escape(full_url)})(\s*\(⭐.*?\) {REPO_INFO_MARK}|\s*\(⭐.*?\)|)',
+            replace_info,
             updated_content
         )
 
