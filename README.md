@@ -61,7 +61,7 @@ jobs:
 ```
 - https://github.com/octocat/Hello-World (⭐ 3014, ⏰ 2025-07-12)​‌‍
 - https://github.com/chroming/pdfdir (⭐ 712, ⏰ 2025-07-07)​‌‍
-- https://github.com/microsoft/vscode (⭐ 174480, ⏰ 2025-07-13)​‌‍
+- https://github.com/microsoft/vscode (⭐ 174481, ⏰ 2025-07-13)​‌‍
 ```
 
 ## License
